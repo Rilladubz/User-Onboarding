@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { Form, Field, withFormik } from 'formik';
-import { Formik } from 'formik';
 import * as Yup from 'yup';
 import axios from 'axios';
 
@@ -10,8 +9,8 @@ import axios from 'axios';
 const UserForm = ({ errors, touched, values, status }) => {
 
     const [users, setUsers] = useState([]);
-    console.log('touched:', touched);
-    useEffect(() =>{
+    console.log('The Data === ', users);
+    useEffect(() => {
         if (status){
             setUsers([...users, status]);
         }
@@ -20,7 +19,7 @@ const UserForm = ({ errors, touched, values, status }) => {
     return(
         <div>
             <h1>User Onboarding</h1>
-            <Formik>
+         
                 <Form>
                     <Field type="text" name="name" placeholder="Name" />
                     {touched.name && errors.name &&(
@@ -38,9 +37,7 @@ const UserForm = ({ errors, touched, values, status }) => {
                     <Field type="checkbox" name="tos" checked={values.tos} />
                     <button type="submit">Submit</button>
                 </Form>
-            </Formik>
-
-            {users.map(user => (
+                {users.map(user => (
                 <ul key={user.id}>
                     <li>name: {user.name}</li>
                     <li>email: {user.email}</li>
@@ -69,14 +66,19 @@ const FormikUserForm = withFormik({
         
     }),
 
-    handleSubmit(values, { setStatus }){
+    handleSubmit(values, { resetForm, setStatus }){
         axios
         .post('https://reqres.in/api/users', values)
         .then(res =>{
             console.log('ax response:', res)
+            resetForm();
             setStatus(res.data);
+            
         })
-        .catch(err => console.log(err.response));
+        .catch(err => {
+            console.log(err);
+            setStatus(false);
+        });
     }
 })(UserForm);
 
